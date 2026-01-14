@@ -1,3 +1,4 @@
+// Home screen - P1 UI
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
