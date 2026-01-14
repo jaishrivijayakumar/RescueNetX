@@ -1,0 +1,16 @@
+import 'package:flutter/material.dart';
+
+class SosScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('SOS Active')),
+      body: const Center(
+        child: Text(
+          '🚨 SOS SENT TO RESCUERS 🚨',
+          style: TextStyle(fontSize: 22),
+        ),
+      ),
+    );
+  }
+}
