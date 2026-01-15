@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'home_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -11,151 +9,119 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen>
     with SingleTickerProviderStateMixin {
-  final _formKey = GlobalKey<FormState>();
+  late AnimationController _controller;
+  late Animation<double> _fadeScale;
 
-  final TextEditingController nameController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController locationController = TextEditingController();
-
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
     super.initState();
-    _checkIfAlreadyRegistered();
 
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    _fadeAnimation =
-        CurvedAnimation(parent: _animationController, curve: Curves.easeIn);
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    );
 
-    _animationController.forward();
-  }
+    _fadeScale = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutBack,
+    );
 
-  /// 🔹 STEP 4 HAPPENS HERE
-  /// If user already entered details once → skip welcome screen
-  Future<void> _checkIfAlreadyRegistered() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isRegistered = prefs.getBool('isRegistered') ?? false;
-
-    if (isRegistered && mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    }
-  }
-
-  Future<void> _saveAndProceed() async {
-    if (_formKey.currentState!.validate()) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('name', nameController.text);
-      await prefs.setString('phone', phoneController.text);
-      await prefs.setString('location', locationController.text);
-      await prefs.setBool('isRegistered', true);
-
-      if (!mounted) return;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
-    }
+    _controller.forward();
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
-    nameController.dispose();
+    _controller.dispose();
     phoneController.dispose();
-    locationController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-
-              /// 🔹 Animated Welcome Text
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: const Text(
-                  'Welcome to RescueNet X',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFB71C1C), Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: Center(
+          child: ScaleTransition(
+            scale: _fadeScale,
+            child: Container(
+              width: 320,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(30), // cylinder look
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 20,
+                    offset: Offset(0, 10),
+                  )
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Welcome to",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.black54,
+                    ),
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              /// 🔹 Credential Form
-              Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Full Name',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Enter your name' : null,
+                  const SizedBox(height: 4),
+                  const Text(
+                    "RescueNetX",
+                    style: TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFB71C1C),
                     ),
-                    const SizedBox(height: 15),
-
-                    TextFormField(
-                      controller: phoneController,
-                      keyboardType: TextInputType.phone,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        border: OutlineInputBorder(),
+                  ),
+                  const SizedBox(height: 24),
+                  TextField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintText: "Enter phone number",
+                      prefixIcon: const Icon(Icons.phone),
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(20),
+                        borderSide: BorderSide.none,
                       ),
-                      validator: (value) =>
-                          value!.length < 8 ? 'Enter valid phone number' : null,
                     ),
-                    const SizedBox(height: 15),
-
-                    TextFormField(
-                      controller: locationController,
-                      decoration: const InputDecoration(
-                        labelText: 'Current Location / Address',
-                        border: OutlineInputBorder(),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFB71C1C),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
                       ),
-                      validator: (value) =>
-                          value!.isEmpty ? 'Enter your location' : null,
                     ),
-                  ],
-                ),
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(
+                          context, '/enterDetails');
+                    },
+                    child: const Text(
+                      "Continue",
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
               ),
-
-              const SizedBox(height: 30),
-
-              /// 🔹 ENTER BUTTON
-              ElevatedButton(
-                onPressed: _saveAndProceed,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
-                ),
-                child: const Text(
-                  'ENTER',
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

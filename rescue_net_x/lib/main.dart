@@ -19,6 +19,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'RescueNetX',
+      theme: ThemeData(
+        primaryColor: Colors.red,
+      ),
+
+      // REQUIRED for Navigator.pushReplacementNamed
+      routes: {
+        '/home': (context) => const HomeScreen(),
+      },
+
       home: FutureBuilder<bool>(
         future: _checkIfRegistered(),
         builder: (context, snapshot) {
@@ -27,7 +37,6 @@ class MyApp extends StatelessWidget {
               body: Center(child: CircularProgressIndicator()),
             );
           }
-
           return snapshot.data!
               ? const HomeScreen()
               : const EnterDetailsScreen();
