@@ -8,29 +8,14 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
+class _HomeScreenState extends State<HomeScreen> {
   String name = '';
   String location = '';
-
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
-
-    _pulseController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )..repeat(reverse: true);
-
-    _pulseAnimation =
-        Tween<double>(begin: 1.0, end: 1.12).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
   }
 
   Future<void> _loadUserData() async {
@@ -41,35 +26,49 @@ class _HomeScreenState extends State<HomeScreen>
     });
   }
 
-  void _confirmSOS() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF16161D),
-        title: const Text(
-          'Confirm SOS',
-          style: TextStyle(color: Colors.white),
+  void _sendSOS() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('🚨 SOS Alert Sent! Help is on the way'),
+        backgroundColor: Colors.redAccent,
+      ),
+    );
+  }
+
+  Widget _featureButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        child: Column(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1C1C25),
+                borderRadius: BorderRadius.circular(25),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.redAccent.withOpacity(0.25),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: Icon(icon, color: Colors.redAccent, size: 36),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(color: Colors.white70),
+            ),
+          ],
         ),
-        content: const Text(
-          'Are you sure you want to send SOS?',
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('NO', style: TextStyle(color: Colors.white70)),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('SOS Sent Successfully')),
-              );
-            },
-            child:
-                const Text('YES', style: TextStyle(color: Colors.redAccent)),
-          ),
-        ],
       ),
     );
   }
@@ -81,81 +80,132 @@ class _HomeScreenState extends State<HomeScreen>
       body: SafeArea(
         child: Column(
           children: [
-            // 🔰 TOP BAR
+            // 🔒 TOP BAR
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              padding: const EdgeInsets.all(16),
               child: Row(
-                children: [
-                  const Icon(
-                    Icons.shield_rounded,
-                    color: Colors.redAccent,
-                    size: 30,
-                  ),
-                  const SizedBox(width: 10),
-                  const Text(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.shield_rounded,
+                      color: Colors.redAccent, size: 28),
+                  SizedBox(width: 8),
+                  Text(
                     'RescueNetX',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
-                      letterSpacing: 1,
+                      letterSpacing: 1.2,
                     ),
                   ),
                 ],
               ),
             ),
 
+            const SizedBox(height: 10),
+
             // 📍 LOCATION
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Row(
-                children: [
-                  const Icon(Icons.location_on,
-                      color: Colors.redAccent, size: 20),
-                  const SizedBox(width: 6),
-                  Expanded(
-                    child: Text(
-                      location,
-                      style:
-                          const TextStyle(color: Colors.white70, fontSize: 14),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
+            Text(
+              '📍 $location',
+              style: const TextStyle(color: Colors.white70),
             ),
 
             const Spacer(),
 
-            // 🚨 CENTERED SOS BUTTON
-            ScaleTransition(
-              scale: _pulseAnimation,
+            // 🚨 CENTER FEATURES ROW
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _featureButton(
+                  icon: Icons.local_hospital,
+                  label: 'Medical',
+                  onTap: () {
+                    // later
+                  },
+                ),
+
+                // 🔴 SOS (CENTER)
+                MouseRegion(
+                  cursor: SystemMouseCursors.click,
+                  child: GestureDetector(
+                    onTap: _sendSOS,
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.redAccent,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.redAccent.withOpacity(0.6),
+                            blurRadius: 25,
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'SOS',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                _featureButton(
+                  icon: Icons.food_bank,
+                  label: 'Food Shelter',
+                  onTap: () {
+                    // later
+                  },
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 40),
+
+            // 🤝 COMMUNITY HELP BOARD
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
               child: GestureDetector(
-                onTap: _confirmSOS,
+                onTap: () {
+                  Navigator.pushNamed(context, '/community');
+                },
                 child: Container(
-                  width: 180,
-                  height: 180,
+                  margin: const EdgeInsets.symmetric(horizontal: 30),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.redAccent,
+                    borderRadius: BorderRadius.circular(30),
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF1C1C25), Color(0xFF101014)],
+                    ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.6),
-                        blurRadius: 40,
-                        spreadRadius: 10,
+                        color: Colors.redAccent.withOpacity(0.25),
+                        blurRadius: 15,
                       ),
                     ],
                   ),
-                  child: const Center(
-                    child: Text(
-                      'SOS',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 42,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 2,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(Icons.groups,
+                          color: Colors.redAccent, size: 26),
+                      SizedBox(width: 10),
+                      Text(
+                        'Community Help Board',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
               ),
@@ -163,7 +213,7 @@ class _HomeScreenState extends State<HomeScreen>
 
             const Spacer(),
 
-            // 👤 FOOTER
+            // 👋 FOOTER
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
@@ -178,11 +228,5 @@ class _HomeScreenState extends State<HomeScreen>
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
   }
 }

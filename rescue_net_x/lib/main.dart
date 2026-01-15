@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import 'screens/enter_details_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/community_help_board.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,11 +24,13 @@ class MyApp extends StatelessWidget {
       title: 'RescueNetX',
       theme: ThemeData(
         primaryColor: Colors.red,
+        scaffoldBackgroundColor: Colors.black,
       ),
 
-      // REQUIRED for Navigator.pushReplacementNamed
+      // ✅ ROUTES
       routes: {
         '/home': (context) => const HomeScreen(),
+        '/community': (context) => const CommunityHelpBoard(),
       },
 
       home: FutureBuilder<bool>(
