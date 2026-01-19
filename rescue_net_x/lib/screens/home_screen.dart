@@ -8,14 +8,27 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
   String name = '';
   String location = '';
+
+  late AnimationController _sosController;
+  late Animation<double> _pulse;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+
+    _sosController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _pulse = Tween<double>(begin: 1.0, end: 1.12).animate(
+      CurvedAnimation(parent: _sosController, curve: Curves.easeInOut),
+    );
   }
 
   Future<void> _loadUserData() async {
@@ -29,46 +42,37 @@ class _HomeScreenState extends State<HomeScreen> {
   void _sendSOS() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('🚨 SOS Alert Sent! Help is on the way'),
+        content: Text('SOS Alert Sent! Help is on the way'),
         backgroundColor: Colors.redAccent,
       ),
     );
   }
 
-  Widget _featureButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
-  }) {
+  Widget _featureBubble(IconData icon, String label) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1C1C25),
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.redAccent.withOpacity(0.25),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Icon(icon, color: Colors.redAccent, size: 36),
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C25),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.redAccent.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white70),
-            ),
-          ],
-        ),
+            child: Icon(icon, color: Colors.redAccent, size: 32),
+          ),
+          const SizedBox(height: 6),
+          Text(label,
+              style: const TextStyle(color: Colors.white70, fontSize: 12)),
+        ],
       ),
     );
   }
@@ -80,20 +84,20 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // 🔒 TOP BAR
+            /// TOP BAR
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
                   Icon(Icons.shield_rounded,
-                      color: Colors.redAccent, size: 28),
-                  SizedBox(width: 8),
+                      color: Colors.redAccent, size: 32),
+                  SizedBox(width: 10),
                   Text(
                     'RescueNetX',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 22,
+                      fontSize: 26,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 1.2,
                     ),
@@ -102,9 +106,9 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 6),
 
-            // 📍 LOCATION
+            /// LOCATION
             Text(
               '📍 $location',
               style: const TextStyle(color: Colors.white70),
@@ -112,44 +116,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const Spacer(),
 
-            // 🚨 CENTER FEATURES ROW
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            /// FEATURES + SOS
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _featureButton(
-                  icon: Icons.local_hospital,
-                  label: 'Medical',
-                  onTap: () {
-                    // later
-                  },
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _featureBubble(Icons.local_hospital, 'Medical Emergency'),
+                    _featureBubble(Icons.food_bank, 'Food & Water Support'),
+                  ],
                 ),
 
-                // 🔴 SOS (CENTER)
+                const SizedBox(height: 30),
+
+                /// SOS BUTTON
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
                     onTap: _sendSOS,
-                    child: Container(
-                      width: 110,
-                      height: 110,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.redAccent,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.redAccent.withOpacity(0.6),
-                            blurRadius: 25,
-                          ),
-                        ],
-                      ),
-                      child: const Center(
-                        child: Text(
-                          'SOS',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2,
+                    child: ScaleTransition(
+                      scale: _pulse,
+                      child: Container(
+                        width: 110,
+                        height: 110,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.redAccent,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.redAccent.withOpacity(0.6),
+                              blurRadius: 30,
+                            ),
+                          ],
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'SOS',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 2,
+                            ),
                           ),
                         ),
                       ),
@@ -157,76 +166,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                _featureButton(
-                  icon: Icons.food_bank,
-                  label: 'Food Shelter',
-                  onTap: () {
-                    // later
-                  },
+                const SizedBox(height: 30),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _featureBubble(Icons.home_rounded, 'Shelter Finder'),
+                    _featureBubble(Icons.groups, 'Community Help Board'),
+                  ],
                 ),
               ],
             ),
 
-            const SizedBox(height: 40),
-
-            // 🤝 COMMUNITY HELP BOARD
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/community');
-                },
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 30),
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF1C1C25), Color(0xFF101014)],
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.redAccent.withOpacity(0.25),
-                        blurRadius: 15,
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(Icons.groups,
-                          color: Colors.redAccent, size: 26),
-                      SizedBox(width: 10),
-                      Text(
-                        'Community Help Board',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-
             const Spacer(),
 
-            // 👋 FOOTER
+            /// FOOTER
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                'Stay Safe, $name',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14,
-                ),
+                'Stay Safe, $name!',
+                style: const TextStyle(color: Colors.white70),
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _sosController.dispose();
+    super.dispose();
   }
 }
