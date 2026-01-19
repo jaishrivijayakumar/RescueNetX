@@ -3,53 +3,6 @@ import 'package:flutter/material.dart';
 class CommunityHelpBoard extends StatelessWidget {
   const CommunityHelpBoard({super.key});
 
-  Widget _cylinderBox(BuildContext context, String title, IconData icon) {
-    return InkWell(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$title clicked')),
-        );
-      },
-      borderRadius: BorderRadius.circular(30),
-      child: Container(
-        height: 120,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1C1C25), Color(0xFF101014)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.redAccent.withOpacity(0.25),
-              blurRadius: 20,
-              offset: const Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: Colors.redAccent, size: 32),
-              const SizedBox(height: 10),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,23 +10,88 @@ class CommunityHelpBoard extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('Community Help Board'),
         centerTitle: true,
+        title: const Text(
+          'Community Help Board',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.2,
+          ),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 20,
-          crossAxisSpacing: 20,
-          childAspectRatio: 1.2,
+        padding: const EdgeInsets.all(16),
+        child: Column(
           children: [
-            _cylinderBox(context, 'People Asking\nfor Help', Icons.help),
-            _cylinderBox(context, 'Volunteers\nOffering Help', Icons.volunteer_activism),
-            _cylinderBox(context, 'Missing\nPeople Info', Icons.person_search),
-            _cylinderBox(context, 'Nearby\nUpdates', Icons.campaign),
+            _helpCard(
+              icon: Icons.local_hospital,
+              title: 'Medical Assistance',
+            ),
+            _helpCard(
+              icon: Icons.food_bank,
+              title: 'Food & Shelter',
+            ),
+            _helpCard(
+              icon: Icons.directions_car,
+              title: 'Transport Help',
+            ),
+            _helpCard(
+              icon: Icons.volunteer_activism,
+              title: 'Volunteer Support',
+            ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _helpCard({
+    required IconData icon,
+    required String title,
+    String? description, // ✅ optional now
+  }) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF1C1C25), Color(0xFF101014)],
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.redAccent.withOpacity(0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 55,
+            height: 55,
+            decoration: BoxDecoration(
+              color: Colors.redAccent.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: Colors.redAccent, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

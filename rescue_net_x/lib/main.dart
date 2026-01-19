@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: Colors.black,
       ),
 
-      // ✅ ROUTES
+      // ✅ ROUTES — THIS MUST MATCH EXACTLY
       routes: {
         '/home': (context) => const HomeScreen(),
         '/community': (context) => const CommunityHelpBoard(),
