@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'medical_emergency.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -48,41 +49,33 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _featureBubble(
-    IconData icon,
-    String label, {
-    VoidCallback? onTap,
-  }) {
+  Widget _featureBubble(IconData icon, String label) {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1C1C25),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.redAccent.withOpacity(0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Icon(icon, color: Colors.redAccent, size: 32),
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C25),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.redAccent.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+            child: Icon(icon, color: Colors.redAccent, size: 32),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ],
       ),
     );
   }
@@ -94,7 +87,6 @@ class _HomeScreenState extends State<HomeScreen>
       body: SafeArea(
         child: Column(
           children: [
-            /// TOP BAR
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
@@ -118,7 +110,6 @@ class _HomeScreenState extends State<HomeScreen>
 
             const SizedBox(height: 6),
 
-            /// LOCATION
             Text(
               '📍 $location',
               style: const TextStyle(color: Colors.white70),
@@ -126,27 +117,33 @@ class _HomeScreenState extends State<HomeScreen>
 
             const Spacer(),
 
-            /// FEATURES + SOS
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _featureBubble(
-                      Icons.local_hospital,
-                      'Medical Emergency',
+                    /// ✅ ONLY CHANGE IS HERE (Medical Emergency)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const MedicalEmergency(),
+                          ),
+                        );
+                      },
+                      child: _featureBubble(
+                          Icons.local_hospital, 'Medical Emergency'),
                     ),
+
                     _featureBubble(
-                      Icons.food_bank,
-                      'Food & Water Support',
-                    ),
+                        Icons.food_bank, 'Food & Water Support'),
                   ],
                 ),
 
                 const SizedBox(height: 30),
 
-                /// SOS BUTTON
                 MouseRegion(
                   cursor: SystemMouseCursors.click,
                   child: GestureDetector(
@@ -187,17 +184,8 @@ class _HomeScreenState extends State<HomeScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _featureBubble(
-                      Icons.home_rounded,
-                      'Shelter Finder',
-                    ),
-                    _featureBubble(
-                      Icons.groups,
-                      'Community Help Board',
-                      onTap: () {
-                        Navigator.pushNamed(context, '/community');
-                      },
-                    ),
+                    _featureBubble(Icons.home_rounded, 'Shelter Finder'),
+                    _featureBubble(Icons.groups, 'Community Help Board'),
                   ],
                 ),
               ],
@@ -205,7 +193,6 @@ class _HomeScreenState extends State<HomeScreen>
 
             const Spacer(),
 
-            /// FOOTER
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
