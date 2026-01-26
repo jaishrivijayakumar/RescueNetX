@@ -1,6 +1,7 @@
 import 'home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/services.dart';
 
 class EnterDetailsScreen extends StatefulWidget {
   const EnterDetailsScreen({super.key});
@@ -13,6 +14,7 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen>
     with SingleTickerProviderStateMixin {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _altPhoneController = TextEditingController();
   final _locationController = TextEditingController();
   final _medicalController = TextEditingController();
 
@@ -55,10 +57,9 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen>
     await prefs.setString('medical', _medicalController.text);
 
     Navigator.pushReplacement(
-  context,
-  MaterialPageRoute(builder: (_) => const HomeScreen()),
-);
-
+      context,
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
+    );
   }
 
   @override
@@ -98,7 +99,6 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen>
                   ),
                   const SizedBox(height: 30),
 
-                  // CYLINDER CARD
                   Container(
                     padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
@@ -119,8 +119,18 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen>
                     child: Column(
                       children: [
                         _field('Name', _nameController, Icons.person),
-                        _field('Phone Number', _phoneController, Icons.phone,
-                            isNumber: true),
+                        _field(
+                          'Phone Number',
+                          _phoneController,
+                          Icons.phone,
+                          isNumber: true,
+                        ),
+                        _field(
+                          'Alternative Phone Number',
+                          _altPhoneController,
+                          Icons.phone_in_talk,
+                          isNumber: true,
+                        ),
                         _field('Location', _locationController, Icons.location_on),
                         _bloodDropdown(),
                         _field(
@@ -162,13 +172,20 @@ class _EnterDetailsScreenState extends State<EnterDetailsScreen>
     );
   }
 
-  Widget _field(String label, TextEditingController controller, IconData icon,
-      {bool isNumber = false}) {
+  // ONLY CHANGE IS HERE (inputFormatters)
+  Widget _field(
+    String label,
+    TextEditingController controller,
+    IconData icon, {
+    bool isNumber = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextField(
         controller: controller,
         keyboardType: isNumber ? TextInputType.phone : TextInputType.text,
+        inputFormatters:
+            isNumber ? [FilteringTextInputFormatter.digitsOnly] : [],
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           prefixIcon: Icon(icon, color: Colors.redAccent),

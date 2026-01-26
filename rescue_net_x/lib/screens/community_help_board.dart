@@ -50,8 +50,7 @@ class CommunityHelpBoard extends StatelessWidget {
 
   Widget _helpCard({
     required IconData icon,
-    required String title,
-    String? description, // ✅ optional now
+    required String title, // ✅ optional now
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
