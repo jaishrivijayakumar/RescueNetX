@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
-// 👉 ADD THESE IMPORTS (REQUIRED FOR FEATURES TO OPEN)
 import 'community_help_board.dart';
 import 'medical_emergency.dart';
 import 'shelter_finder.dart';
 import 'food_water_support.dart';
+import '../providers/notification_provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,41 +55,37 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  /// 🔹 FEATURE BUBBLE (ONLY CHANGE = onTap ADDED)
   Widget _featureBubble(
     IconData icon,
     String label,
     VoidCallback onTap,
   ) {
-    return MouseRegion(
-      cursor: SystemMouseCursors.click,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Column(
-          children: [
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                color: const Color(0xFF1C1C25),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.redAccent.withOpacity(0.25),
-                    blurRadius: 10,
-                    offset: const Offset(0, 6),
-                  ),
-                ],
-              ),
-              child: Icon(icon, color: Colors.redAccent, size: 32),
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C25),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.redAccent.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white70, fontSize: 12),
-            ),
-          ],
-        ),
+            child: Icon(icon, color: Colors.redAccent, size: 32),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ],
       ),
     );
   }
@@ -100,31 +97,73 @@ class _HomeScreenState extends State<HomeScreen>
       body: SafeArea(
         child: Column(
           children: [
-            /// TOP BAR
+            /// 🔝 TOP BAR WITH BELL
             Padding(
               padding: const EdgeInsets.all(16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
-                  Icon(Icons.shield_rounded,
-                      color: Colors.redAccent, size: 32),
-                  SizedBox(width: 10),
-                  Text(
-                    'RescueNetX',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: const [
+                      Icon(Icons.shield_rounded,
+                          color: Colors.redAccent, size: 32),
+                      SizedBox(width: 10),
+                      Text(
+                        'RescueNetX',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  /// 🔔 NOTIFICATION BELL
+                  Consumer<NotificationProvider>(
+                    builder: (context, notifier, _) => Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, '/notifications');
+                          },
+                        ),
+                        if (notifier.unreadCount > 0)
+                          Positioned(
+                            right: 6,
+                            top: 6,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                notifier.unreadCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 4),
 
-            /// LOCATION
+            /// 📍 LOCATION
             Text(
               '📍 $location',
               style: const TextStyle(color: Colors.white70),
@@ -134,7 +173,6 @@ class _HomeScreenState extends State<HomeScreen>
 
             /// FEATURES + SOS
             Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -146,8 +184,8 @@ class _HomeScreenState extends State<HomeScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const MedicalEmergency(),
-                          ),
+                              builder: (_) =>
+                                  const MedicalEmergency()),
                         );
                       },
                     ),
@@ -158,8 +196,8 @@ class _HomeScreenState extends State<HomeScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const FoodWaterSupport(),
-                          ),
+                              builder: (_) =>
+                                  const FoodWaterSupport()),
                         );
                       },
                     ),
@@ -169,34 +207,31 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(height: 30),
 
                 /// SOS BUTTON
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: _sendSOS,
-                    child: ScaleTransition(
-                      scale: _pulse,
-                      child: Container(
-                        width: 110,
-                        height: 110,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.redAccent,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.redAccent.withOpacity(0.6),
-                              blurRadius: 30,
-                            ),
-                          ],
-                        ),
-                        child: const Center(
-                          child: Text(
-                            'SOS',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 2,
-                            ),
+                GestureDetector(
+                  onTap: _sendSOS,
+                  child: ScaleTransition(
+                    scale: _pulse,
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.redAccent,
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.redAccent.withOpacity(0.6),
+                            blurRadius: 30,
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'SOS',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -216,20 +251,20 @@ class _HomeScreenState extends State<HomeScreen>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ShelterFinder(),
-                          ),
+                              builder: (_) =>
+                                  const ShelterFinder()),
                         );
                       },
                     ),
                     _featureBubble(
                       Icons.groups,
-                      'Community Help Board',
+                      'Community Help',
                       () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const CommunityHelpBoard(),
-                          ),
+                              builder: (_) =>
+                                  const CommunityHelpBoard()),
                         );
                       },
                     ),

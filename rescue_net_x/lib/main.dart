@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 import 'screens/enter_details_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/community_help_board.dart';
+import 'providers/notification_provider.dart';
+import 'screens/notifications_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) {
+        final provider = NotificationProvider();
+        provider.startAutoNotifications(); // 🔥 THIS WAS MISSING
+        return provider;
+      },
+      child: const MyApp(),
+    ),
+  );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,6 +44,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/home': (context) => const HomeScreen(),
         '/community': (context) => const CommunityHelpBoard(),
+        '/notifications': (context) => const NotificationsScreen(),
       },
 
       home: FutureBuilder<bool>(
