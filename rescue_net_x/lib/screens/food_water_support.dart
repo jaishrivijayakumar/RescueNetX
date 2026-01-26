@@ -27,20 +27,16 @@ class FoodWaterSupport extends StatelessWidget {
         child: Column(
           children: [
             _foodCard(
-              icon: Icons.food_bank,
-              title: 'Food Distribution',
+              icon: Icons.warehouse,
+              title: 'Relief Distribution Centres',
             ),
             _foodCard(
-              icon: Icons.water_drop,
-              title: 'Drinking Water',
-            ),
-            _foodCard(
-              icon: Icons.restaurant,
+              icon: Icons.soup_kitchen,
               title: 'Community Kitchens',
             ),
             _foodCard(
               icon: Icons.volunteer_activism,
-              title: 'Volunteer Food Help',
+              title: 'NGO Food Points',
             ),
           ],
         ),

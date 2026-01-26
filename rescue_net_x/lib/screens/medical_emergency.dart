@@ -27,11 +27,11 @@ class MedicalEmergency extends StatelessWidget {
         child: Column(
           children: [
             _medicalCard(
-              icon: Icons.local_hospital,
-              title: 'Call Ambulance',
+              icon: Icons.call,
+              title: 'Emergency Helpline Numbers',
             ),
             _medicalCard(
-              icon: Icons.medical_services,
+              icon: Icons.healing,
               title: 'Nearby Hospitals',
             ),
             _medicalCard(
@@ -39,8 +39,8 @@ class MedicalEmergency extends StatelessWidget {
               title: 'Find Doctor',
             ),
             _medicalCard(
-              icon: Icons.healing,
-              title: 'First Aid Help',
+              icon: Icons.bloodtype,
+              title: 'Blood Requirement Alerts',
             ),
           ],
         ),

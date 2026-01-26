@@ -27,20 +27,20 @@ class CommunityHelpBoard extends StatelessWidget {
         child: Column(
           children: [
             _helpCard(
-              icon: Icons.local_hospital,
-              title: 'Medical Assistance',
-            ),
-            _helpCard(
-              icon: Icons.food_bank,
-              title: 'Food & Shelter',
-            ),
-            _helpCard(
-              icon: Icons.directions_car,
-              title: 'Transport Help',
+              icon: Icons.help,
+              title: 'Help Requests',
             ),
             _helpCard(
               icon: Icons.volunteer_activism,
-              title: 'Volunteer Support',
+              title: 'Volunteers Offers',
+            ),
+            _helpCard(
+              icon: Icons.person_search,
+              title: 'Missing Persons',
+            ),
+            _helpCard(
+              icon: Icons.campaign,
+              title: 'Community Updates',
             ),
           ],
         ),

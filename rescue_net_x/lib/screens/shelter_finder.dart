@@ -27,20 +27,24 @@ class ShelterFinder extends StatelessWidget {
         child: Column(
           children: [
             _shelterCard(
-              icon: Icons.home_rounded,
-              title: 'Nearby Shelters',
+              icon: Icons.holiday_village,
+              title: 'Relief Camps',
             ),
             _shelterCard(
-              icon: Icons.location_on,
-              title: 'Safe Locations',
+              icon: Icons.apartment,
+              title: 'Temporary Shelters',
             ),
             _shelterCard(
-              icon: Icons.night_shelter,
-              title: 'Temporary Housing',
+              icon: Icons.terrain,
+              title: 'Safe Zones',
             ),
-            _shelterCard(
-              icon: Icons.people,
-              title: 'Community Shelters',
+             _shelterCard(
+              icon: Icons.pets,
+              title: 'Pet Rescue',
+            ),
+             _shelterCard(
+              icon: Icons.bolt_sharp,
+              title: 'Power & Charging points',
             ),
           ],
         ),
