@@ -13,7 +13,7 @@ void main() {
     ChangeNotifierProvider(
       create: (_) {
         final provider = NotificationProvider();
-        provider.startAutoNotifications(); // 🔥 THIS WAS MISSING
+        provider.startAutoNotifications(); // ✅ NOW EXISTS
         return provider;
       },
       child: const MyApp(),
