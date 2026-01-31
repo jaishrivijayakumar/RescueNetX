@@ -1,6 +1,27 @@
+const express = require("express");
+
 ServiceWorkerRegistration.js
 s
 
 PORT=5000
-http://localhost:5000
-/api
+// server.js
+
+app.use(express.json());
+const app = express();
+
+app.use(express.json());
+
+// API created HERE 👇
+app.get("/api/test", (req, res) => {
+    res.send("API working");
+});
+
+app.listen(5000, () => {
+    console.log("Server started");
+});
+
+
+
+
+
+
