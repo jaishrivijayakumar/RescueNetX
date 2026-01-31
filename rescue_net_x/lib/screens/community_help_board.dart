@@ -32,7 +32,7 @@ class CommunityHelpBoard extends StatelessWidget {
             ),
             _helpCard(
               icon: Icons.volunteer_activism,
-              title: 'Volunteers Offers',
+              title: 'Volunteer Offers',
             ),
             _helpCard(
               icon: Icons.person_search,
@@ -50,7 +50,7 @@ class CommunityHelpBoard extends StatelessWidget {
 
   Widget _helpCard({
     required IconData icon,
-    required String title, // ✅ optional now
+    required String title,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),

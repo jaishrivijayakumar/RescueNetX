@@ -32,13 +32,18 @@ class FloatingNotification extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item.title,
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)),
+                  Text(
+                    item.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  Text(item.message,
-                      style: const TextStyle(color: Colors.white70)),
+                  Text(
+                    item.message,
+                    style: const TextStyle(color: Colors.white70),
+                  ),
                 ],
               ),
             ),
