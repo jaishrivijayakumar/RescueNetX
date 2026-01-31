@@ -1,36 +1,297 @@
 import 'package:flutter/material.dart';
-import 'sos_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
-class HomeScreen extends StatelessWidget {
+import 'community_help_board.dart';
+import 'medical_emergency.dart';
+import 'shelter_finder.dart';
+import 'food_water_support.dart';
+import '../providers/notification_provider.dart';
+
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  String name = '';
+  String location = '';
+
+  late AnimationController _sosController;
+  late Animation<double> _pulse;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+
+    _sosController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+
+    _pulse = Tween<double>(begin: 1.0, end: 1.12).animate(
+      CurvedAnimation(parent: _sosController, curve: Curves.easeInOut),
+    );
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name') ?? '';
+      location = prefs.getString('location') ?? 'Not set';
+    });
+  }
+
+  void _sendSOS() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('SOS Alert Sent! Help is on the way'),
+        backgroundColor: Colors.redAccent,
+      ),
+    );
+  }
+
+  Widget _featureBubble(
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1C1C25),
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.redAccent.withOpacity(0.25),
+                  blurRadius: 10,
+                  offset: const Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Icon(icon, color: Colors.redAccent, size: 32),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            label,
+            style: const TextStyle(color: Colors.white70, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('RescueNet X')),
-      body: Center(
-        child: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            padding: const EdgeInsets.symmetric(
-              horizontal: 50,
-              vertical: 25,
-            ),
-          ),
-          child: const Text(
-            'EMERGENCY SOS',
-            style: TextStyle(fontSize: 20, color: Colors.white),
-          ),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SosScreen(), // ❌ no const
+      backgroundColor: const Color(0xFF0F0F14),
+      body: SafeArea(
+        child: Column(
+          children: [
+            /// 🔝 TOP BAR WITH BELL
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: const [
+                      Icon(Icons.shield_rounded,
+                          color: Colors.redAccent, size: 32),
+                      SizedBox(width: 10),
+                      Text(
+                        'RescueNetX',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  /// 🔔 NOTIFICATION BELL
+                  Consumer<NotificationProvider>(
+                    builder: (context, notifier, _) => Stack(
+                      children: [
+                        IconButton(
+                          icon: const Icon(
+                            Icons.notifications,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () {
+                            Navigator.pushNamed(
+                                context, '/notifications');
+                          },
+                        ),
+                        if (notifier.unreadCount > 0)
+                          Positioned(
+                            right: 6,
+                            top: 6,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Colors.red,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                notifier.unreadCount.toString(),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            );
-          },
+            ),
+
+            const SizedBox(height: 4),
+
+            /// 📍 LOCATION
+            Text(
+              '📍 $location',
+              style: const TextStyle(color: Colors.white70),
+            ),
+
+            const Spacer(),
+
+            /// FEATURES + SOS
+            Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _featureBubble(
+                      Icons.local_hospital,
+                      'Medical Emergency',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const MedicalEmergency()),
+                        );
+                      },
+                    ),
+                    _featureBubble(
+                      Icons.food_bank,
+                      'Food & Water Support',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const FoodWaterSupport()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 30),
+
+                /// SOS BUTTON
+                GestureDetector(
+                  onTap: _sendSOS,
+                  child: ScaleTransition(
+                    scale: _pulse,
+                    child: Container(
+                      width: 110,
+                      height: 110,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.redAccent,
+                        boxShadow: [
+                          BoxShadow(
+                            color:
+                                Colors.redAccent.withOpacity(0.6),
+                            blurRadius: 30,
+                          ),
+                        ],
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'SOS',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _featureBubble(
+                      Icons.home_rounded,
+                      'Shelter Finder',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const ShelterFinder()),
+                        );
+                      },
+                    ),
+                    _featureBubble(
+                      Icons.groups,
+                      'Community Help',
+                      () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) =>
+                                  const CommunityHelpBoard()),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+
+            const Spacer(),
+
+            /// FOOTER
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: Text(
+                'Stay Safe, $name!',
+                style: const TextStyle(color: Colors.white70),
+              ),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _sosController.dispose();
+    super.dispose();
   }
 }
