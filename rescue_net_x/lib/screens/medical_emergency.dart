@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CommunityHelpBoard extends StatelessWidget {
-  const CommunityHelpBoard({super.key});
+class MedicalEmergency extends StatelessWidget {
+  const MedicalEmergency({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class CommunityHelpBoard extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Community Help Board',
+          'Medical Emergency',
           style: TextStyle(
             color: Colors.white,
             fontSize: 22,
@@ -26,21 +26,21 @@ class CommunityHelpBoard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _helpCard(
-              icon: Icons.help,
-              title: 'Help Requests',
+            _medicalCard(
+              icon: Icons.call,
+              title: 'Emergency Helpline Numbers',
             ),
-            _helpCard(
-              icon: Icons.volunteer_activism,
-              title: 'Volunteer Offers',
+            _medicalCard(
+              icon: Icons.healing,
+              title: 'Nearby Hospitals',
             ),
-            _helpCard(
+            _medicalCard(
               icon: Icons.person_search,
-              title: 'Missing Persons',
+              title: 'Find Doctor',
             ),
-            _helpCard(
-              icon: Icons.campaign,
-              title: 'Community Updates',
+            _medicalCard(
+              icon: Icons.bloodtype,
+              title: 'Blood Requirement Alerts',
             ),
           ],
         ),
@@ -48,7 +48,7 @@ class CommunityHelpBoard extends StatelessWidget {
     );
   }
 
-  Widget _helpCard({
+  Widget _medicalCard({
     required IconData icon,
     required String title,
   }) {

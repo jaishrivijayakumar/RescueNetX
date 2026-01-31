@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CommunityHelpBoard extends StatelessWidget {
-  const CommunityHelpBoard({super.key});
+class ShelterFinder extends StatelessWidget {
+  const ShelterFinder({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +12,7 @@ class CommunityHelpBoard extends StatelessWidget {
         elevation: 0,
         centerTitle: true,
         title: const Text(
-          'Community Help Board',
+          'Shelter Finder',
           style: TextStyle(
             color: Colors.white,
             fontSize: 22,
@@ -26,21 +26,25 @@ class CommunityHelpBoard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _helpCard(
-              icon: Icons.help,
-              title: 'Help Requests',
+            _shelterCard(
+              icon: Icons.holiday_village,
+              title: 'Relief Camps',
             ),
-            _helpCard(
-              icon: Icons.volunteer_activism,
-              title: 'Volunteer Offers',
+            _shelterCard(
+              icon: Icons.apartment,
+              title: 'Temporary Shelters',
             ),
-            _helpCard(
-              icon: Icons.person_search,
-              title: 'Missing Persons',
+            _shelterCard(
+              icon: Icons.terrain,
+              title: 'Safe Zones',
             ),
-            _helpCard(
-              icon: Icons.campaign,
-              title: 'Community Updates',
+             _shelterCard(
+              icon: Icons.pets,
+              title: 'Pet Rescue',
+            ),
+             _shelterCard(
+              icon: Icons.bolt_sharp,
+              title: 'Power & Charging points',
             ),
           ],
         ),
@@ -48,7 +52,7 @@ class CommunityHelpBoard extends StatelessWidget {
     );
   }
 
-  Widget _helpCard({
+  Widget _shelterCard({
     required IconData icon,
     required String title,
   }) {

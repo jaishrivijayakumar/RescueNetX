@@ -12,9 +12,15 @@ void main() {
   runApp(
     ChangeNotifierProvider(
       create: (_) {
+<<<<<<< HEAD
         final p = NotificationProvider();
         p.startAutoNotifications();
         return p;
+=======
+        final provider = NotificationProvider();
+        provider.startAutoNotifications(); // 🔥 THIS WAS MISSING
+        return provider;
+>>>>>>> 02655a717726928bd2ed25a1901708364559916c
       },
       child: const MyApp(),
     ),
