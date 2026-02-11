@@ -1,97 +1,171 @@
 import 'package:flutter/material.dart';
-import 'community_help_board.dart';
-import 'food_water_support.dart';
-import 'notifications_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: const Text(
-          'RescueNetX',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller =
+        AnimationController(vsync: this, duration: const Duration(seconds: 1))
+          ..repeat(reverse: true);
+
+    _scaleAnimation =
+        Tween<double>(begin: 1.0, end: 1.1).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget featureButton(String title, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: 70,
+        width: 70,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.red, width: 2),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications, color: Colors.white),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const NotificationsScreen(),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _card(
-              context,
-              title: 'Community Help Board',
-              icon: Icons.groups,
-              screen: const CommunityHelpBoard(),
-            ),
-            _card(
-              context,
-              title: 'Food & Water Support',
-              icon: Icons.fastfood,
-              screen: const FoodWaterSupport(),
-            ),
-          ],
+        alignment: Alignment.center,
+        child: Text(
+          title,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.red, fontSize: 10),
         ),
       ),
     );
   }
 
-  Widget _card(
-    BuildContext context, {
-    required String title,
-    required IconData icon,
-    required Widget screen,
-  }) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => screen),
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          gradient: const LinearGradient(
-            colors: [Color(0xFF1C1C25), Color(0xFF101014)],
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Stack(
+        children: [
+
+          /// LOCATION (Top Center)
+          Positioned(
+            top: 50,
+            left: 0,
+            right: 0,
+            child: Column(
+              children: const [
+                Icon(Icons.location_on, color: Colors.red),
+                SizedBox(height: 4),
+                Text(
+                  "Current Location",
+                  style: TextStyle(color: Colors.red),
+                ),
+              ],
+            ),
           ),
+
+          /// NOTIFICATION BELL (Top Right)
+          Positioned(
+            top: 50,
+            right: 20,
+            child: IconButton(
+              icon: const Icon(Icons.notifications, color: Colors.red),
+              onPressed: () {
+                Navigator.pushNamed(context, '/notifications');
+              },
+            ),
+          ),
+
+          /// CENTER AREA
+          /// CENTER AREA
+Center(
+  child: SizedBox(
+    height: 320,
+    width: 320,
+    child: Stack(
+      alignment: Alignment.center,
+      children: [
+
+        /// TOP LEFT
+        Positioned(
+          left: 0,
+          top: 0,
+          child: featureButton("Community", () {
+            Navigator.pushNamed(context, '/community');
+          }),
         ),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.redAccent, size: 30),
-            const SizedBox(width: 16),
-            Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
+
+        /// TOP RIGHT
+        Positioned(
+          right: 0,
+          top: 0,
+          child: featureButton("Food\nWater", () {
+            Navigator.pushNamed(context, '/food');
+          }),
+        ),
+
+        /// BOTTOM LEFT
+        Positioned(
+          left: 0,
+          bottom: 0,
+          child: featureButton("Shelter", () {
+            Navigator.pushNamed(context, '/shelter');
+          }),
+        ),
+
+        /// BOTTOM RIGHT
+        Positioned(
+          right: 0,
+          bottom: 0,
+          child: featureButton("Emergency", () {
+            Navigator.pushNamed(context, '/emergency');
+          }),
+        ),
+
+        /// SOS BUTTON (CENTER)
+        ScaleTransition(
+          scale: _scaleAnimation,
+          child: GestureDetector(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Alert Sent to Nearby Rescuers 🚨"),
+                ),
+              );
+            },
+            child: Container(
+              height: 120,
+              width: 120,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.red, width: 3),
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                "SOS",
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ],
+          ),
         ),
+      ],
+    ),
+  ),
+),
+        ],
       ),
     );
   }

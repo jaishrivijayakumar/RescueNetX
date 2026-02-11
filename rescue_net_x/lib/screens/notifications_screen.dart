@@ -15,7 +15,9 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: Consumer<NotificationProvider>(
         builder: (context, provider, _) {
-          if (provider.notifications.isEmpty) {
+          final notifications = provider.notifications;
+
+          if (notifications.isEmpty) {
             return const Center(
               child: Text(
                 'No notifications',
@@ -26,9 +28,9 @@ class NotificationsScreen extends StatelessWidget {
 
           return ListView.builder(
             padding: const EdgeInsets.all(16),
-            itemCount: provider.notifications.length,
+            itemCount: notifications.length,
             itemBuilder: (context, index) {
-              final item = provider.notifications[index];
+              final item = notifications[index];
 
               return Dismissible(
                 key: ValueKey(item.time),
