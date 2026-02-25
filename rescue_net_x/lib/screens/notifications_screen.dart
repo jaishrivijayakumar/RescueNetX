@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/notification_provider.dart';
+import '../models/notification_item.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -15,7 +16,7 @@ class NotificationsScreen extends StatelessWidget {
       ),
       body: Consumer<NotificationProvider>(
         builder: (context, provider, _) {
-          final notifications = provider.notifications;
+          final notifications = provider.storedNotifications;
 
           if (notifications.isEmpty) {
             return const Center(
@@ -30,11 +31,13 @@ class NotificationsScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             itemCount: notifications.length,
             itemBuilder: (context, index) {
-              final item = notifications[index];
+              final NotificationItem item = notifications[index];
 
               return Dismissible(
                 key: ValueKey(item.time),
-                onDismissed: (_) => provider.remove(item),
+                onDismissed: (_) {
+                  provider.dismissActive(item);
+                },
                 child: NotificationCard(
                   title: item.title,
                   description: item.description,
@@ -78,13 +81,18 @@ class NotificationCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(description,
-                    style: const TextStyle(color: Colors.white70)),
+                Text(
+                  description,
+                  style: const TextStyle(color: Colors.white70),
+                ),
               ],
             ),
           ),
